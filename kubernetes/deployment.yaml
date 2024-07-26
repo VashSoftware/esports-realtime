@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: socketio-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: socketio
+  template:
+    metadata:
+      labels:
+        app: socketio
+    spec:
+      containers:
+      - name: socketio
+        image: your-docker-image
+        ports:
+        - containerPort: 3000
