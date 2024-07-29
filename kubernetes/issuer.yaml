@@ -1,0 +1,15 @@
+# issuer-lets-encrypt-staging.yaml
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: esports-realtime-issuer
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: stan@vash.software
+    privateKeySecretRef:
+      name: esports-realtime-issuer
+    solvers:
+    - http01:
+        ingress:
+          name: esports-realtime-ingress

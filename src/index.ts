@@ -9,13 +9,20 @@ import { handleMatchQueueUpdate } from "./events/matchQueueUpdate";
 import { handleQuickQueueUpdate } from "./events/quickQueueUpdate";
 import { createClient } from "@supabase/supabase-js";
 import { handleMatchParticipantsUpdate } from "./events/matchParticipantsUpdate";
+import { readFileSync } from "fs";
+import { createServer } from "https";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-const io = new Server({
+const httpsServer = createServer({
+  key: readFileSync("/path/to/my/key.pem"),
+  cert: readFileSync("/path/to/my/cert.pem"),
+});
+
+const io = new Server(httpsServer, {
   cors: {
     origin: process.env.CORS_ORIGIN,
   },
