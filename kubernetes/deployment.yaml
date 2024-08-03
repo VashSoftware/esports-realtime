@@ -8,20 +8,14 @@ spec:
     matchLabels:
       app: esports-realtime
   replicas: 1
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   template:
     metadata:
       labels:
-        app:  esports-realtime
+        app: esports-realtime
     spec:
       containers:
-      - name:  esports-realtime
-        image:  europe-docker.pkg.dev/vash-esports/esports-realtime/esports-realtime
-        imagePullPolicy: Always
+      - name: esports-realtime
+        image: europe-docker.pkg.dev/vash-esports/esports-realtime/esports-realtime
         resources:
           requests:
             cpu: 100m
@@ -29,25 +23,14 @@ spec:
           limits:
             cpu: 100m
             memory: 100Mi
-        # livenessProbe:
-        #   tcpSocket:
-        #     port: 80
-        #   initialDelaySeconds: 5
-        #   timeoutSeconds: 5
-        #   successThreshold: 1
-        #   failureThreshold: 3
-        #   periodSeconds: 10
-        # readinessProbe:
-        #   httpGet:
-        #     path: /_status/healthz
-        #     port: 80
-        #   initialDelaySeconds: 5
-        #   timeoutSeconds: 2
-        #   successThreshold: 1
-        #   failureThreshold: 3
-        #   periodSeconds: 10
+        ports:
+        - containerPort: 3001
+        volumeMounts:
+        - name: tls-certs
+          mountPath: "/etc/tls"
+          readOnly: true
         env:
-        - name: CORS_ORIGIN 
+        - name: CORS_ORIGIN
           valueFrom:
             configMapKeyRef:
               name: esports-realtime-config
@@ -57,11 +40,12 @@ spec:
             configMapKeyRef:
               name: esports-realtime-config
               key: SUPABASE_URL
-        - name: SUPABASE_ANON_KEY
+        - name: SUPABASE_SERVICE_KEY
           valueFrom:
             secretKeyRef:
               name: esports-realtime-secret
               key: SUPABASE_SERVICE_KEY
-        ports:
-        - containerPort: 3001
-      restartPolicy: Always
+      volumes:
+      - name: tls-certs
+        secret:
+          secretName: tls-secret

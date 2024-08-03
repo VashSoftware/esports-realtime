@@ -1,24 +1,39 @@
+import { createClient } from "@supabase/supabase-js";
+import express from "express";
+import { readFileSync } from "fs";
+import { createServer } from "https";
 import { Server } from "socket.io";
+import { server } from "typescript";
 import { handleMapPoolUpdate } from "./events/mapPoolUpdate";
 import { handleMatchesUpdate } from "./events/matchesUpdate";
 import { handleMatchMapsUpdate } from "./events/matchMapsUpdate";
 import { handleMatchParticipantPlayersUpdate } from "./events/matchParticipantPlayersUpdate";
-import { handleNotificationsUpdate } from "./events/notificationsUpdate";
-import { handleScoresUpdate } from "./events/scoresUpdate";
-import { handleMatchQueueUpdate } from "./events/matchQueueUpdate";
-import { handleQuickQueueUpdate } from "./events/quickQueueUpdate";
-import { createClient } from "@supabase/supabase-js";
 import { handleMatchParticipantsUpdate } from "./events/matchParticipantsUpdate";
+import { handleMatchQueueUpdate } from "./events/matchQueueUpdate";
+import { handleNotificationsUpdate } from "./events/notificationsUpdate";
+import { handleQuickQueueUpdate } from "./events/quickQueueUpdate";
+import { handleScoresUpdate } from "./events/scoresUpdate";
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-const io = new Server({
+const app = express();
+
+const httpsServer = createServer({
+  key: readFileSync("/etc/tls/tls.key"),
+  cert: readFileSync("/etc/tls/tls.crt"),
+});
+
+const io = new Server(httpsServer, {
   cors: {
     origin: process.env.CORS_ORIGIN,
   },
+});
+
+app.get("/healthz", (req, res) => {
+  res.status(200).send("OK");
 });
 
 io.on("connection", (socket) => {
@@ -26,19 +41,16 @@ io.on("connection", (socket) => {
 
   socket.on("join-user", (userId: string) => {
     console.log(`User ${userId} joined!`);
-
     socket.join(`user-${userId}`);
   });
 
   socket.on("join-match", (matchId: string) => {
     console.log(`Match ${matchId} joined!`);
-
     socket.join(`match-${matchId}`);
   });
 
   socket.on("join-pool", (poolId: string) => {
     console.log(`Pool ${poolId} joined!`);
-
     socket.join(`pool-${poolId}`);
   });
 
@@ -79,4 +91,6 @@ io.on("connection", (socket) => {
   });
 });
 
-io.listen(3001);
+httpsServer.listen(3001, () => {
+  console.log("Server is listening on port 3001");
+});
