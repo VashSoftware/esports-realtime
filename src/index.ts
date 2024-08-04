@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import express from "express";
 import { readFileSync } from "fs";
 import { createServer } from "https";
+import http from "http";
 import { Server } from "socket.io";
 import { handleMapPoolUpdate } from "./events/mapPoolUpdate";
 import { handleMatchesUpdate } from "./events/matchesUpdate";
@@ -24,6 +25,8 @@ const httpsServer = createServer({
   key: readFileSync("/etc/tls/tls.key"),
   cert: readFileSync("/etc/tls/tls.crt"),
 });
+
+// const httpsServer = http.createServer();
 
 const io = new Server(httpsServer, {
   cors: {
