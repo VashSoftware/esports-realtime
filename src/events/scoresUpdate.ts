@@ -9,11 +9,5 @@ export async function handleScoresUpdate(
   // Your code here
   console.log("Scores updated.");
 
-  const score = await supabase
-    .from("scores")
-    .select("*")
-    .eq("id", payload.new.id)
-    .single();
-
-  io.to(`match-${score.data.match_id}`).emit("scores-update", payload);
+  io.to(`match-${payload.new.id}`).emit("scores-update", payload);
 }

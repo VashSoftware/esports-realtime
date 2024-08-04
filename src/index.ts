@@ -3,7 +3,6 @@ import express from "express";
 import { readFileSync } from "fs";
 import { createServer } from "https";
 import { Server } from "socket.io";
-import { server } from "typescript";
 import { handleMapPoolUpdate } from "./events/mapPoolUpdate";
 import { handleMatchesUpdate } from "./events/matchesUpdate";
 import { handleMatchMapsUpdate } from "./events/matchMapsUpdate";
@@ -28,7 +27,7 @@ const httpsServer = createServer({
 
 const io = new Server(httpsServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN,
+    origin: ["http://localhost:*", process.env.CORS_ORIGIN!],
   },
 });
 

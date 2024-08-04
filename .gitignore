@@ -133,3 +133,5 @@ kubernetes/secret.yaml
 
 fullchain.pem
 privkey.pem
+
+certs
