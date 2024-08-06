@@ -30,7 +30,7 @@ const httpsServer = createServer({
 
 const io = new Server(httpsServer, {
   cors: {
-    origin: ["http://localhost:*", process.env.CORS_ORIGIN!],
+    origin: "*",
   },
 });
 
